@@ -44,3 +44,8 @@ models/*
 reports/figures/*
 reports/tables/*
 !reports/**/.gitkeep
+
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
