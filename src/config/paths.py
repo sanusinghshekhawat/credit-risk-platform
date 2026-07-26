@@ -5,6 +5,7 @@ class ProjectPaths:
     """Centralized project paths."""
 
     ROOT = Path(__file__).resolve().parents[2]
+    CONFIGS = ROOT / "configs"
 
     DATA = ROOT / "data"
 
@@ -23,3 +24,5 @@ class ProjectPaths:
 
     ACCEPTED_LOANS = RAW_EXTRACTED / "accepted_2007_to_2018Q4.csv"
     REJECTED_LOANS = RAW_EXTRACTED / "rejected_2007_to_2018Q4.csv"
+
+    LEAKAGE_RULES = CONFIGS / "leakage_rules.yaml"

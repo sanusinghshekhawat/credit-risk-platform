@@ -1,0 +1,187 @@
+loan_status:
+  decision: TARGET
+  reason: Prediction target
+
+loan_amnt:
+  decision: KEEP
+  reason: Requested loan amount
+
+funded_amnt:
+  decision: KEEP
+  reason: Loan amount approved
+
+funded_amnt_inv:
+  decision: REVIEW
+  reason: Investor-funded amount may not be finalized at application
+
+term:
+  decision: KEEP
+  reason: Loan term selected by applicant
+
+int_rate:
+  decision: REVIEW
+  reason: Assigned during underwriting
+
+installment:
+  decision: REVIEW
+  reason: Derived from loan terms
+
+grade:
+  decision: REVIEW
+  reason: LendingClub assigned risk grade
+
+sub_grade:
+  decision: REVIEW
+  reason: LendingClub assigned detailed risk grade
+
+emp_title:
+  decision: REVIEW
+  reason: Applicant-provided employer title
+
+emp_length:
+  decision: KEEP
+  reason: Employment history available at application
+
+home_ownership:
+  decision: KEEP
+  reason: Applicant housing status
+
+annual_inc:
+  decision: KEEP
+  reason: Applicant annual income
+
+verification_status:
+  decision: KEEP
+  reason: Income verification status
+
+purpose:
+  decision: KEEP
+  reason: Loan purpose
+
+title:
+  decision: REVIEW
+  reason: Free-text title
+
+zip_code:
+  decision: REVIEW
+  reason: Geographic information
+
+addr_state:
+  decision: KEEP
+  reason: Applicant state
+
+dti:
+  decision: KEEP
+  reason: Debt-to-income ratio
+
+delinq_2yrs:
+  decision: KEEP
+  reason: Previous delinquencies
+
+earliest_cr_line:
+  decision: REVIEW
+  reason: Credit history start date
+
+fico_range_low:
+  decision: KEEP
+  reason: Credit score
+
+fico_range_high:
+  decision: KEEP
+  reason: Credit score
+
+open_acc:
+  decision: KEEP
+  reason: Number of open credit accounts
+
+pub_rec:
+  decision: KEEP
+  reason: Public records
+
+revol_bal:
+  decision: KEEP
+  reason: Revolving balance
+
+revol_util:
+  decision: KEEP
+  reason: Revolving utilization
+
+total_acc:
+  decision: KEEP
+  reason: Total credit accounts
+
+application_type:
+  decision: KEEP
+  reason: Individual or joint application
+
+id:
+  decision: DROP
+  reason: Unique identifier
+
+member_id:
+  decision: DROP
+  reason: Internal identifier
+
+url:
+  decision: DROP
+  reason: URL identifier
+
+desc:
+  decision: DROP
+  reason: Free-text description
+
+policy_code:
+  decision: DROP
+  reason: Internal policy code
+
+out_prncp:
+  decision: LEAKAGE
+  reason: Remaining principal after loan issuance
+
+out_prncp_inv:
+  decision: LEAKAGE
+  reason: Remaining investor principal
+
+total_pymnt:
+  decision: LEAKAGE
+  reason: Total payments received
+
+total_pymnt_inv:
+  decision: LEAKAGE
+  reason: Investor payments received
+
+total_rec_prncp:
+  decision: LEAKAGE
+  reason: Principal repaid
+
+total_rec_int:
+  decision: LEAKAGE
+  reason: Interest received
+
+total_rec_late_fee:
+  decision: LEAKAGE
+  reason: Late fees received
+
+recoveries:
+  decision: LEAKAGE
+  reason: Recovery after default
+
+collection_recovery_fee:
+  decision: LEAKAGE
+  reason: Recovery fee after default
+
+last_pymnt_d:
+  decision: LEAKAGE
+  reason: Date of last payment
+
+last_pymnt_amnt:
+  decision: LEAKAGE
+  reason: Amount of last payment
+
+next_pymnt_d:
+  decision: LEAKAGE
+  reason: Next scheduled payment
+
+last_credit_pull_d:
+  decision: LEAKAGE
+  reason: Updated after application
