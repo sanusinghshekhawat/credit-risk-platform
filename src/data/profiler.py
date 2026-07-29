@@ -27,7 +27,7 @@ class DataProfiler:
             columns=self.columns(df),
             memory_mb=self.memory_usage(df),
             duplicate_rows=self.duplicate_rows(df),
-            missing_values=self.missing_values(df),
+            missing_counts=self.missing_counts(df),
             numerical_columns=self.numerical_columns(df),
             categorical_columns=self.categorical_columns(df),
             datetime_columns=self.datetime_columns(df),
@@ -58,10 +58,10 @@ class DataProfiler:
         return round(memory / (1024**2), 2)
 
     # --------------------------------------------------------
-    # Missing Values
+    # Missing Counts
     # --------------------------------------------------------
 
-    def missing_values(self, df: pd.DataFrame) -> dict[str, int]:
+    def missing_counts(self, df: pd.DataFrame) -> dict[str, int]:
         missing = df.isna().sum()
 
         return {column: int(count) for column, count in missing.items() if count > 0}

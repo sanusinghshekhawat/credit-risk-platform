@@ -1,187 +1,812 @@
+# =============================================================================
+# Feature Eligibility & Leakage Rules
+# =============================================================================
+#
+# Project
+#   Credit Risk / Loan Default Prediction
+#
+# Purpose
+#   Defines the eligibility of every dataset feature for model training.
+#
+# Modeling Assumption
+#   The model predicts loan default at the time of loan application
+#   (pre-approval underwriting).
+#
+# Decision Types
+#   KEEP     : Safe to use for model training.
+#   REVIEW   : Requires business review before inclusion.
+#   DROP     : Excluded due to administrative, identifier, or project-specific reasons.
+#   LEAKAGE  : Information unavailable at prediction time.
+#   TARGET   : Prediction target.
+#
+# =============================================================================
+
+# =============================================================================
+# Target
+# =============================================================================
+
 loan_status:
   decision: TARGET
-  reason: Prediction target
+  reason: Prediction target.
+
+
+# =============================================================================
+# Loan Application
+# =============================================================================
 
 loan_amnt:
   decision: KEEP
-  reason: Requested loan amount
+  reason: Requested loan amount available at application.
+
 
 funded_amnt:
-  decision: KEEP
-  reason: Loan amount approved
+  decision: REVIEW
+  reason: Approved loan amount; depends on the intended prediction stage.
+
 
 funded_amnt_inv:
   decision: REVIEW
-  reason: Investor-funded amount may not be finalized at application
+  reason: Investor-funded amount may not be finalized at application.
+
 
 term:
   decision: KEEP
-  reason: Loan term selected by applicant
+  reason: Loan term selected during application.
+
 
 int_rate:
   decision: REVIEW
-  reason: Assigned during underwriting
+  reason: Assigned during underwriting; depends on deployment scenario.
+
 
 installment:
   decision: REVIEW
-  reason: Derived from loan terms
+  reason: Derived from approved loan terms and interest rate.
 
-grade:
+
+issue_d:
   decision: REVIEW
-  reason: LendingClub assigned risk grade
+  reason: Loan issue date; availability depends on prediction timing.
 
-sub_grade:
-  decision: REVIEW
-  reason: LendingClub assigned detailed risk grade
-
-emp_title:
-  decision: REVIEW
-  reason: Applicant-provided employer title
-
-emp_length:
-  decision: KEEP
-  reason: Employment history available at application
-
-home_ownership:
-  decision: KEEP
-  reason: Applicant housing status
-
-annual_inc:
-  decision: KEEP
-  reason: Applicant annual income
-
-verification_status:
-  decision: KEEP
-  reason: Income verification status
 
 purpose:
   decision: KEEP
-  reason: Loan purpose
+  reason: Applicant-selected loan purpose.
+
 
 title:
+  decision: KEEP
+  reason: Free-text loan title that overlaps with purpose.
+
+
+initial_list_status:
   decision: REVIEW
-  reason: Free-text title
+  reason: LendingClub listing status requiring business interpretation.
 
-zip_code:
-  decision: REVIEW
-  reason: Geographic information
-
-addr_state:
-  decision: KEEP
-  reason: Applicant state
-
-dti:
-  decision: KEEP
-  reason: Debt-to-income ratio
-
-delinq_2yrs:
-  decision: KEEP
-  reason: Previous delinquencies
-
-earliest_cr_line:
-  decision: REVIEW
-  reason: Credit history start date
-
-fico_range_low:
-  decision: KEEP
-  reason: Credit score
-
-fico_range_high:
-  decision: KEEP
-  reason: Credit score
-
-open_acc:
-  decision: KEEP
-  reason: Number of open credit accounts
-
-pub_rec:
-  decision: KEEP
-  reason: Public records
-
-revol_bal:
-  decision: KEEP
-  reason: Revolving balance
-
-revol_util:
-  decision: KEEP
-  reason: Revolving utilization
-
-total_acc:
-  decision: KEEP
-  reason: Total credit accounts
 
 application_type:
   decision: KEEP
-  reason: Individual or joint application
+  reason: Indicates whether the application is individual or joint.
+
+
+disbursement_method:
+  decision: DROP
+  reason: Constant administrative field with no predictive value in this dataset.
+
+
+# =============================================================================
+# Applicant Information
+# =============================================================================
+
+emp_title:
+  decision: KEEP
+  reason: High-cardinality free-text employment title.
+
+
+emp_length:
+  decision: KEEP
+  reason: Employment tenure available at application.
+
+
+home_ownership:
+  decision: KEEP
+  reason: Applicant home ownership status available at application.
+
+
+annual_inc:
+  decision: KEEP
+  reason: Applicant annual income available at application.
+
+
+verification_status:
+  decision: KEEP
+  reason: Income verification status determined during underwriting.
+
+
+zip_code:
+  decision: KEEP
+  reason: Partial geographic information requiring business review.
+
+
+addr_state:
+  decision: KEEP
+  reason: State of residence available at application.
+
+
+dti:
+  decision: KEEP
+  reason: Debt-to-income ratio available at application.
+
+
+annual_inc_joint:
+  decision: KEEP
+  reason: Joint applicant annual income; applicable only for joint applications.
+
+
+dti_joint:
+  decision: KEEP
+  reason: Debt-to-income ratio for joint applications.
+
+
+verification_status_joint:
+  decision: KEEP
+  reason: Income verification status for joint applicants.
+
+
+# =============================================================================
+# Credit History & Bureau
+# =============================================================================
+
+grade:
+  decision: REVIEW
+  reason: LendingClub internal credit grade; may embed proprietary risk assessment.
+
+
+sub_grade:
+  decision: REVIEW
+  reason: More granular internal credit grade; requires modeling decision.
+
+
+delinq_2yrs:
+  decision: KEEP
+  reason: Historical delinquencies reported by the credit bureau.
+
+
+earliest_cr_line:
+  decision: KEEP
+  reason: Earliest credit line reported by the credit bureau.
+
+
+fico_range_low:
+  decision: KEEP
+  reason: Application-time FICO score range.
+
+
+fico_range_high:
+  decision: KEEP
+  reason: Application-time FICO score range.
+
+
+inq_last_6mths:
+  decision: KEEP
+  reason: Recent credit inquiries available from the credit bureau.
+
+
+mths_since_last_delinq:
+  decision: KEEP
+  reason: Historical delinquency information available at application.
+
+
+mths_since_last_record:
+  decision: KEEP
+  reason: Historical public record information available at application.
+
+
+open_acc:
+  decision: KEEP
+  reason: Number of open credit accounts reported by the credit bureau.
+
+
+pub_rec:
+  decision: KEEP
+  reason: Number of derogatory public records available at application.
+
+
+revol_bal:
+  decision: KEEP
+  reason: Revolving credit balance reported by the credit bureau.
+
+
+revol_util:
+  decision: KEEP
+  reason: Revolving credit utilization ratio available at application.
+
+
+total_acc:
+  decision: KEEP
+  reason: Total number of credit accounts reported by the credit bureau.
+
+
+collections_12_mths_ex_med:
+  decision: KEEP
+  reason: Number of non-medical collections reported in the last 12 months at application.
+
+
+mths_since_last_major_derog:
+  decision: KEEP
+  reason: Months since the last major derogatory credit event available at application.
+
+
+acc_now_delinq:
+  decision: KEEP
+  reason: Number of accounts currently delinquent at application.
+
+
+tot_coll_amt:
+  decision: KEEP
+  reason: Total amount currently in collections.
+
+
+tot_cur_bal:
+  decision: KEEP
+  reason: Total current balance across all credit accounts.
+
+
+open_acc_6m:
+  decision: KEEP
+  reason: Number of accounts opened in the last six months.
+
+
+open_act_il:
+  decision: KEEP
+  reason: Number of active installment loan accounts.
+
+
+open_il_12m:
+  decision: KEEP
+  reason: Number of installment accounts opened in the last 12 months.
+
+
+open_il_24m:
+  decision: KEEP
+  reason: Number of installment accounts opened in the last 24 months.
+
+
+mths_since_rcnt_il:
+  decision: KEEP
+  reason: Months since the most recent installment account was opened.
+
+
+total_bal_il:
+  decision: KEEP
+  reason: Total balance of installment loan accounts.
+
+
+il_util:
+  decision: KEEP
+  reason: Installment loan utilization ratio.
+
+
+open_rv_12m:
+  decision: KEEP
+  reason: Number of revolving accounts opened in the last 12 months.
+
+
+open_rv_24m:
+  decision: KEEP
+  reason: Number of revolving accounts opened in the last 24 months.
+
+
+max_bal_bc:
+  decision: KEEP
+  reason: Maximum balance across bankcard accounts.
+
+
+all_util:
+  decision: KEEP
+  reason: Overall credit utilization across all tradelines.
+
+
+total_rev_hi_lim:
+  decision: KEEP
+  reason: Total revolving credit limit available at application.
+
+
+inq_fi:
+  decision: KEEP
+  reason: Number of finance-related credit inquiries.
+
+
+total_cu_tl:
+  decision: KEEP
+  reason: Total number of consumer finance trade lines.
+
+
+inq_last_12m:
+  decision: KEEP
+  reason: Number of credit inquiries during the previous 12 months.
+
+
+acc_open_past_24mths:
+  decision: KEEP
+  reason: Number of accounts opened during the previous 24 months.
+
+
+avg_cur_bal:
+  decision: KEEP
+  reason: Average current balance across all credit accounts.
+
+
+bc_open_to_buy:
+  decision: KEEP
+  reason: Available unused bankcard credit.
+
+
+bc_util:
+  decision: KEEP
+  reason: Bankcard utilization ratio.
+
+
+chargeoff_within_12_mths:
+  decision: KEEP
+  reason: Number of charge-offs during the previous 12 months.
+
+
+delinq_amnt:
+  decision: KEEP
+  reason: Total amount currently delinquent.
+
+
+mo_sin_old_il_acct:
+  decision: KEEP
+  reason: Months since the oldest installment account was opened.
+
+
+mo_sin_old_rev_tl_op:
+  decision: KEEP
+  reason: Months since the oldest revolving account was opened.
+
+
+mo_sin_rcnt_rev_tl_op:
+  decision: KEEP
+  reason: Months since the most recent revolving account was opened.
+
+
+mo_sin_rcnt_tl:
+  decision: KEEP
+  reason: Months since the most recent credit account was opened.
+
+
+mort_acc:
+  decision: KEEP
+  reason: Number of mortgage accounts.
+
+
+mths_since_recent_bc:
+  decision: KEEP
+  reason: Months since the most recent bankcard account was opened.
+
+
+mths_since_recent_bc_dlq:
+  decision: KEEP
+  reason: Months since the most recent bankcard delinquency.
+
+
+mths_since_recent_inq:
+  decision: KEEP
+  reason: Months since the most recent credit inquiry.
+
+
+mths_since_recent_revol_delinq:
+  decision: KEEP
+  reason: Months since the most recent revolving delinquency.
+
+
+num_accts_ever_120_pd:
+  decision: KEEP
+  reason: Number of accounts ever 120 or more days past due.
+
+
+num_actv_bc_tl:
+  decision: KEEP
+  reason: Number of active bankcard trade lines.
+
+
+num_actv_rev_tl:
+  decision: KEEP
+  reason: Number of active revolving trade lines.
+
+
+num_bc_sats:
+  decision: KEEP
+  reason: Number of satisfactory bankcard accounts.
+
+
+num_bc_tl:
+  decision: KEEP
+  reason: Total number of bankcard trade lines.
+
+
+num_il_tl:
+  decision: KEEP
+  reason: Total number of installment loan trade lines.
+
+
+num_op_rev_tl:
+  decision: KEEP
+  reason: Number of open revolving trade lines.
+
+
+num_rev_accts:
+  decision: KEEP
+  reason: Total number of revolving credit accounts.
+
+
+num_rev_tl_bal_gt_0:
+  decision: KEEP
+  reason: Revolving trade lines with a positive balance.
+
+
+num_sats:
+  decision: KEEP
+  reason: Number of satisfactory credit accounts.
+
+
+num_tl_120dpd_2m:
+  decision: KEEP
+  reason: Accounts 120+ days past due within the last 2 months.
+
+
+num_tl_30dpd:
+  decision: KEEP
+  reason: Accounts currently 30 days past due.
+
+
+num_tl_90g_dpd_24m:
+  decision: KEEP
+  reason: Accounts 90+ days past due during the previous 24 months.
+
+
+num_tl_op_past_12m:
+  decision: KEEP
+  reason: Number of accounts opened during the previous 12 months.
+
+
+pct_tl_nvr_dlq:
+  decision: KEEP
+  reason: Percentage of trade lines that have never been delinquent.
+
+
+percent_bc_gt_75:
+  decision: KEEP
+  reason: Percentage of bankcard accounts with utilization greater than 75%.
+
+
+pub_rec_bankruptcies:
+  decision: KEEP
+  reason: Number of public bankruptcy records available at application.
+
+
+tax_liens:
+  decision: KEEP
+  reason: Number of tax liens reported at application.
+
+
+tot_hi_cred_lim:
+  decision: KEEP
+  reason: Total high credit limit across all accounts.
+
+
+total_bal_ex_mort:
+  decision: KEEP
+  reason: Total balance excluding mortgage accounts.
+
+
+total_bc_limit:
+  decision: KEEP
+  reason: Total bankcard credit limit.
+
+
+total_il_high_credit_limit:
+  decision: KEEP
+  reason: Total high credit limit for installment accounts.
+
+
+revol_bal_joint:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+# =============================================================================
+# Administrative & Identifiers
+# =============================================================================
 
 id:
   decision: DROP
-  reason: Unique identifier
+  reason: Unique loan identifier with no predictive value.
+
 
 member_id:
   decision: DROP
-  reason: Internal identifier
+  reason: Legacy member identifier; completely missing in this dataset.
+
+
+pymnt_plan:
+  decision: DROP
+  reason: Constant feature with no predictive information.
+
 
 url:
   decision: DROP
-  reason: URL identifier
+  reason: Loan listing URL; identifier only.
+
 
 desc:
   decision: DROP
-  reason: Free-text description
+  reason: Applicant description field is completely missing in this dataset.
+
 
 policy_code:
   decision: DROP
-  reason: Internal policy code
+  reason: Internal LendingClub policy code with no predictive value.
+
+
+# =============================================================================
+# Secondary Applicant
+# =============================================================================
+
+sec_app_fico_range_low:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+sec_app_fico_range_high:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+sec_app_earliest_cr_line:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+sec_app_inq_last_6mths:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+sec_app_mort_acc:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+sec_app_open_acc:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+sec_app_revol_util:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+sec_app_open_act_il:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+sec_app_num_rev_accts:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+sec_app_chargeoff_within_12_mths:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+sec_app_collections_12_mths_ex_med:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+sec_app_mths_since_last_major_derog:
+  decision: DROP
+  reason: Secondary applicant feature; completely missing in this dataset.
+
+
+# =============================================================================
+# Loan Servicing (Leakage)
+# =============================================================================
 
 out_prncp:
   decision: LEAKAGE
-  reason: Remaining principal after loan issuance
+  reason: Outstanding principal after loan servicing begins.
+
 
 out_prncp_inv:
   decision: LEAKAGE
-  reason: Remaining investor principal
+  reason: Investor outstanding principal after loan servicing begins.
+
 
 total_pymnt:
   decision: LEAKAGE
-  reason: Total payments received
+  reason: Total payments received after loan origination.
+
 
 total_pymnt_inv:
   decision: LEAKAGE
-  reason: Investor payments received
+  reason: Total investor payments received after loan origination.
+
 
 total_rec_prncp:
   decision: LEAKAGE
-  reason: Principal repaid
+  reason: Principal repaid after loan origination.
+
 
 total_rec_int:
   decision: LEAKAGE
-  reason: Interest received
+  reason: Interest received after loan origination.
+
 
 total_rec_late_fee:
   decision: LEAKAGE
-  reason: Late fees received
+  reason: Late fees collected during loan servicing.
+
 
 recoveries:
   decision: LEAKAGE
-  reason: Recovery after default
+  reason: Recoveries collected after default.
+
 
 collection_recovery_fee:
   decision: LEAKAGE
-  reason: Recovery fee after default
+  reason: Recovery fees collected after default.
+
 
 last_pymnt_d:
   decision: LEAKAGE
-  reason: Date of last payment
+  reason: Date of last payment is only known after loan servicing.
+
 
 last_pymnt_amnt:
   decision: LEAKAGE
-  reason: Amount of last payment
+  reason: Amount of last payment received after loan origination.
+
 
 next_pymnt_d:
   decision: LEAKAGE
-  reason: Next scheduled payment
+  reason: Future payment schedule unavailable at application.
+
 
 last_credit_pull_d:
   decision: LEAKAGE
-  reason: Updated after application
+  reason: Date of the most recent credit pull after loan origination.
+
+
+last_fico_range_high:
+  decision: LEAKAGE
+  reason: Updated FICO score observed after loan issuance.
+
+
+last_fico_range_low:
+  decision: LEAKAGE
+  reason: Updated FICO score observed after loan issuance.
+
+
+# =============================================================================
+# Hardship Program (Leakage)
+# =============================================================================
+
+hardship_flag:
+  decision: LEAKAGE
+  reason: Indicates whether the borrower entered a hardship program after loan origination.
+
+
+hardship_type:
+  decision: LEAKAGE
+  reason: Hardship program details available only after loan servicing begins.
+
+
+hardship_reason:
+  decision: LEAKAGE
+  reason: Reason for hardship program participation after loan origination.
+
+
+hardship_status:
+  decision: LEAKAGE
+  reason: Hardship program status during loan servicing.
+
+
+deferral_term:
+  decision: LEAKAGE
+  reason: Payment deferral information available after loan origination.
+
+
+hardship_amount:
+  decision: LEAKAGE
+  reason: Hardship payment amount determined during loan servicing.
+
+
+hardship_start_date:
+  decision: LEAKAGE
+  reason: Hardship program start date.
+
+
+hardship_end_date:
+  decision: LEAKAGE
+  reason: Hardship program end date.
+
+
+payment_plan_start_date:
+  decision: LEAKAGE
+  reason: Payment plan start date after loan origination.
+
+
+hardship_length:
+  decision: LEAKAGE
+  reason: Duration of hardship program.
+
+
+hardship_dpd:
+  decision: LEAKAGE
+  reason: Days past due during hardship program.
+
+
+hardship_loan_status:
+  decision: LEAKAGE
+  reason: Loan status during hardship program.
+
+
+orig_projected_additional_accrued_interest:
+  decision: LEAKAGE
+  reason: Interest projected during hardship servicing.
+
+
+hardship_payoff_balance_amount:
+  decision: LEAKAGE
+  reason: Payoff balance calculated during hardship.
+
+
+hardship_last_payment_amount:
+  decision: LEAKAGE
+  reason: Last hardship payment amount.
+
+
+# =============================================================================
+# Debt Settlement (Leakage)
+# =============================================================================
+
+debt_settlement_flag:
+  decision: LEAKAGE
+  reason: Indicates whether the loan entered debt settlement after origination.
+
+
+debt_settlement_flag_date:
+  decision: LEAKAGE
+  reason: Debt settlement event date.
+
+
+settlement_status:
+  decision: LEAKAGE
+  reason: Debt settlement status after loan origination.
+
+
+settlement_date:
+  decision: LEAKAGE
+  reason: Debt settlement completion date.
+
+
+settlement_amount:
+  decision: LEAKAGE
+  reason: Debt settlement amount determined after default.
+
+
+settlement_percentage:
+  decision: LEAKAGE
+  reason: Settlement percentage negotiated after default.
+
+
+settlement_term:
+  decision: LEAKAGE
+  reason: Debt settlement repayment term established after default.

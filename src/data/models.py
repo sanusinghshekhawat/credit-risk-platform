@@ -20,7 +20,7 @@ class DataProfile:
 
     duplicate_rows: int
 
-    missing_values: dict[str, int]
+    missing_counts: dict[str, int]
 
     numerical_columns: list[str]
 
