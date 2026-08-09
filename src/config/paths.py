@@ -14,6 +14,7 @@ class ProjectPaths:
     RAW_EXTRACTED = RAW / "extracted"
 
     INTERIM = DATA / "interim"
+    EDA_DATASET = INTERIM / "eda_dataset.parquet"
     PROCESSED = DATA / "processed"
     EXTERNAL = DATA / "external"
 
